@@ -184,7 +184,7 @@
             align-items: center;
             justify-content: center;
             position: absolute;
-            left: 5px; 
+            left: -40px; 
             top: 50%;
             transform: translateY(-50%);
         }
@@ -307,26 +307,6 @@
             font-size: 1.5em;
             color: #333; /* Dark text color */
         }
-
-        /* API Status Indicator */
-        .api-status {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 12px;
-            color: white;
-            z-index: 100;
-        }
-
-        .api-status.online {
-            background-color: #28a745; /* Green for online */
-        }
-
-        .api-status.offline {
-            background-color: #dc3545; /* Red for offline */
-        }
     </style>
 </head>
 <body>
@@ -335,9 +315,6 @@
         <div class="loader"></div>
         <p>Loading...</p>
     </div>
-
-    <!-- API Status Indicator -->
-    <div id="api-status" class="api-status" style="display: none;"></div>
 
     <!-- Main Content -->
     <div class="content" style="display:none;">
@@ -365,7 +342,7 @@
                 <div class="chat-box" id="chat-box" aria-live="assertive" aria-label="Chat messages"></div>
                 <div class="input-container">
                     <input type="text" id="message-input" placeholder="Ask me anything!" aria-label="Message input" maxlength="200">
-                    <button id="send-button" aria-label="send message" role="button">Send</button>
+                    <button id="send-button" aria-label="send message" role="button">Send Message</button>
                 </div>
             </div>
 
@@ -380,20 +357,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.1.3/marked.min.js"></script>
     <script>
-        // Configuration - Use hardcoded URL for Replit
-        const API_URL = "https://152a1aea-42ed-4a2a-91aa-1baf5004ffee-00-cd6guwqubgyw.riker.replit.dev"; 
-        const API_ENDPOINTS = {
-            generate: API_URL + "/api/generate",
-            health: API_URL + "/api/health",
-            models: API_URL + "/api/models"
-        };
-
-        // Elements
-        const input = document.getElementById('message-input');
-        const sendButton = document.getElementById('send-button');
-        const chatBox = document.getElementById('chat-box');
-        const apiStatus = document.getElementById('api-status');
-
         // Simulate loading time
         window.onload = function () {
             setTimeout(function () {
@@ -401,10 +364,12 @@
                 document.querySelector('.content').style.display = 'block'; // Show main content
                 // Show welcome message
                 showWelcomeMessage();
-                // Check API status
-                checkApiStatus();
             }, 1000); // Adjusted time to 1 second
         };
+    
+        const input = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+        const chatBox = document.getElementById('chat-box');
         
         // Show welcome message
         function showWelcomeMessage() {
@@ -448,12 +413,8 @@
                 
                 thinkingElement.innerHTML += "Thinking...";
                 chatBox.appendChild(thinkingElement);
-                chatBox.scrollTop = chatBox.scrollHeight;
                 
-                // Disable the send button while processing
-                sendButton.disabled = true;
-                
-                const response = await fetch(API_ENDPOINTS.generate, {
+                const response = await fetch("https://152a1aea-42ed-4a2a-91aa-1baf5004ffee-00-cd6guwqubgyw.riker.replit.dev/api/generate", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -493,7 +454,6 @@
     
                 chatBox.appendChild(responseElement);
     
-                // If KaTeX is available for math rendering
                 if (typeof renderMathInElement !== 'undefined') {
                     renderMathInElement(responseElement, {
                         delimiters: [
@@ -515,15 +475,13 @@
                 errorRobotEmoji.textContent = '🤖';
                 errorElement.appendChild(errorRobotEmoji);
                 
-                errorElement.innerHTML += "⚠️ Failed to get a response: " + (error.message || "Unknown error");
+                errorElement.innerHTML += "⚠️ Failed to get a response from AI: " + error.message;
                 chatBox.appendChild(errorElement);
-            } finally {
-                // Enable the send button again
-                sendButton.disabled = false;
-                chatBox.scrollTop = chatBox.scrollHeight;
             }
+    
+            chatBox.scrollTop = chatBox.scrollHeight;
         }
-
+    
         sendButton.addEventListener('click', sendMessage);
         input.addEventListener('keypress', function (event) {
             if (event.key === 'Enter') {
@@ -541,45 +499,21 @@
         // Check API status on load
         async function checkApiStatus() {
             try {
-                const response = await fetch(API_ENDPOINTS.health);
+                const response = await fetch("https://152a1aea-42ed-4a2a-91aa-1baf5004ffee-00-cd6guwqubgyw.riker.replit.dev/api/health");
                 const data = await response.json();
-                
-                // Show API status indicator
-                apiStatus.style.display = 'block';
                 
                 if (data.status === "ok") {
                     console.log("API is online and functioning");
-                    apiStatus.textContent = "API Online";
-                    apiStatus.className = "api-status online";
                 } else {
                     console.warn("API returned unexpected status:", data);
-                    apiStatus.textContent = "API Status: Unknown";
-                    apiStatus.className = "api-status offline";
-                    
-                    // Show warning message
-                    const apiWarningElement = document.createElement('div');
-                    apiWarningElement.className = 'chat-message incoming';
-                    
-                    // Add robot emoji
-                    const robotEmoji = document.createElement('div');
-                    robotEmoji.className = 'robot-emoji';
-                    robotEmoji.textContent = '🤖';
-                    apiWarningElement.appendChild(robotEmoji);
-                    
-                    apiWarningElement.innerHTML += "⚠️ API status is unexpected. Some features may not work correctly.";
-                    chatBox.appendChild(apiWarningElement);
                 }
             } catch (error) {
                 console.error("Failed to connect to API:", error);
                 
-                // Show offline status indicator
-                apiStatus.style.display = 'block';
-                apiStatus.textContent = "API Offline";
-                apiStatus.className = "api-status offline";
-                
                 // Show error message in chat
                 const apiErrorElement = document.createElement('div');
                 apiErrorElement.className = 'chat-message incoming';
+                apiErrorElement.style.backgroundColor = '#ffdddd';
                 
                 // Add robot emoji
                 const robotEmoji = document.createElement('div');
@@ -591,6 +525,9 @@
                 chatBox.appendChild(apiErrorElement);
             }
         }
+        
+        // Check API status when page loads
+        setTimeout(checkApiStatus, 1500);
     </script>
 </body>
 </html>

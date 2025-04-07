@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SūdžiusAI</title>
+    <link rel="stylesheet" href="styles.css">
     <style>
         /* CSS Variables */
         :root {
@@ -19,7 +20,101 @@
             --border-radius: 4px;
         }
 
-        /* All your CSS styles remain the same */
+        /* Dark Mode Variables */
+        body.dark-mode {
+            --primary-color: #1a1a1a;
+            --background-color: #333;
+            --chat-background: #444;
+            --incoming-message-color: #555;
+        }
+
+        /* Body and Navbar styles */
+        body {
+            font-family: var(--font-family);
+            background: linear-gradient(to bottom, var(--primary-color), var(--background-color));
+            margin: 0;
+            padding: 0;
+            transition: background 0.3s;
+        }
+
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            color: white;
+            position: relative; 
+        }
+
+        .navbar img {
+            height: 40px;
+        }
+
+        .navbar-title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        /* Dropdown styles */
+        .menu-container {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .menu-button {
+            cursor: pointer; 
+            transition: opacity 0.2s ease; 
+            outline: none; /* Remove outline */
+        }
+
+        .dropdown-content {
+            display: none; 
+            position: absolute; 
+            background-color: var(--dropdown-background); 
+            min-width: 160px; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1; 
+            border-radius: 8px; 
+            overflow: hidden;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 100%;
+            opacity: 0; 
+            visibility: hidden; 
+            transition: opacity 0.2s ease, visibility 0.2s ease; 
+        }
+
+        .dropdown-content ul {
+            list-style-type: none; 
+            padding: 0; 
+            margin: 0; 
+        }
+
+        .dropdown-content a {
+            color: var(--dropdown-item-color);
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .dropdown-content a:hover {
+            background-color: var(--dropdown-item-hover);
+            transform: scale(1.05);
+        }
+
+        /* Show dropdown on hover and fade effects */
+        .menu-container:hover .dropdown-content,
+        .menu-button:focus + .dropdown-content {
+            display: block;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .menu-container:hover .menu-button {
+            opacity: 0; 
+        }
 
         /* Chat container styles */
         .chat-container {
@@ -76,13 +171,22 @@
             color: black;
             align-self: flex-start;
             border-bottom-left-radius: 0;
+            padding-left: 40px;
             position: relative; 
         }
 
         .robot-emoji {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #e5e5ea; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
             position: absolute;
-            left: -30px;
-            top: 10px;
+            left: 5px; 
+            top: 50%;
+            transform: translateY(-50%);
         }
 
         .input-container {
@@ -110,6 +214,63 @@
             transition: background-color 0.3s;
         }
 
+        .input-container button:hover {
+            background-color: var(--hover-color);
+        }
+
+        .input-container input:focus,
+        .input-container button:focus {
+            outline: 2px solid var(--primary-color);
+        }
+
+        /* Dark Mode Toggle Styles */
+        .toggle-container {
+            position: relative;
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .toggle-switch {
+            display: none;
+        }
+
+        .switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: var(--primary-color);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #E9F8FD;
+            border-radius: 15px;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch:checked + .switch {
+            background: #F5EC59;
+        }
+
+        .toggle-switch:checked + .switch .fill {
+            transform: translateX(30px);
+        }
+
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         /* Loading Screen Styles */
         .loading-screen {
             position: fixed;
@@ -117,26 +278,54 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: rgba(255, 255, 255, 0.9);
+            background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent background */
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 9999;
+            z-index: 9999; /* Ensure it covers the entire screen */
         }
 
         .loader {
             width: 100px;
             height: 100px;
-            border: 16px solid #f3f3f3;
-            border-top: 16px solid #3498db;
+            border: 16px solid #f3f3f3; /* Light grey */
+            border-top: 16px solid #3498db; /* Blue */
             border-radius: 50%;
-            animation: spin 1s linear infinite;
+            animation: spin 1s linear infinite; /* Animation for spinning effect */
         }
 
+        /* Animation Keyframes */
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+
+        /* Text Styles */
+        .loading-screen p {
+            margin-top: 20px;
+            font-size: 1.5em;
+            color: #333; /* Dark text color */
+        }
+
+        /* API Status Indicator */
+        .api-status {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: white;
+            z-index: 100;
+        }
+
+        .api-status.online {
+            background-color: #28a745; /* Green for online */
+        }
+
+        .api-status.offline {
+            background-color: #dc3545; /* Red for offline */
         }
     </style>
 </head>
@@ -147,40 +336,92 @@
         <p>Loading...</p>
     </div>
 
+    <!-- API Status Indicator -->
+    <div id="api-status" class="api-status" style="display: none;"></div>
+
     <!-- Main Content -->
     <div class="content" style="display:none;">
         <header class="navbar">
+            <img src="https://zaliakalnis.kaunas.lm.lt/wp-content/uploads/2023/10/cropped-logo-192x192.png" 
+                 alt="Logo" 
+                 onerror="this.onerror=null; this.src='Kauno-Zaliakalnio-progimnazija_logo-e1679002355734-300x300.jpg';">
             <span class="navbar-title">SūdžiusAI</span>
+            <div class="menu-container">
+                <div class="menu-button" tabindex="0" aria-haspopup="true" aria-expanded="false" role="button">
+                    <span class="menu-text" aria-label="Menu">Menu</span>
+                </div>
+                <div class="dropdown-content" aria-hidden="true">
+                    <ul>
+                        <li><a href="index.html" id="home-link" aria-current="page">Home</a></li>
+                        <li><a href="about.html" aria-label="About page">About</a></li>
+                        <li><a href="Login.html" aria-label="Log In page">Log in</a></li>
+                    </ul>
+                </div>
+            </div>
         </header>
 
         <main class="chat-container" id="chat-container">
             <div class="chat-wrapper">
-                <div class="chat-box" id="chat-box"></div>
+                <div class="chat-box" id="chat-box" aria-live="assertive" aria-label="Chat messages"></div>
                 <div class="input-container">
-                    <input type="text" id="message-input" placeholder="Ask me anything!" maxlength="200">
-                    <button id="send-button">Send</button>
+                    <input type="text" id="message-input" placeholder="Ask me anything!" aria-label="Message input" maxlength="200">
+                    <button id="send-button" aria-label="send message" role="button">Send</button>
                 </div>
+            </div>
+
+            <div class="toggle-container" aria-label="Toggle dark mode">
+                <input type="checkbox" id="toggle" class="toggle-switch" aria-hidden="true">
+                <label for="toggle" class="switch">
+                    <div class="fill"></div>
+                </label>
             </div>
         </main>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/2.1.3/marked.min.js"></script>
     <script>
+        // Configuration
+        const API_URL = window.location.origin; // Get the current domain as API URL
+        const API_ENDPOINTS = {
+            generate: API_URL + "/api/generate",
+            health: API_URL + "/api/health",
+            models: API_URL + "/api/models"
+        };
+
+        // Elements
+        const input = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+        const chatBox = document.getElementById('chat-box');
+        const apiStatus = document.getElementById('api-status');
+
         // Simulate loading time
         window.onload = function () {
             setTimeout(function () {
                 document.querySelector('.loading-screen').style.display = 'none'; // Hide loading screen
                 document.querySelector('.content').style.display = 'block'; // Show main content
+                // Show welcome message
+                showWelcomeMessage();
+                // Check API status
+                checkApiStatus();
             }, 1000); // Adjusted time to 1 second
         };
-    
-        const input = document.getElementById('message-input');
-        const sendButton = document.getElementById('send-button');
-        const chatBox = document.getElementById('chat-box');
         
-        // This will automatically use the URL of your Replit application
-        // You should change this URL to match your actual API URL
-        const API_URL = window.location.origin + "/api/generate";
+        // Show welcome message
+        function showWelcomeMessage() {
+            const welcomeElement = document.createElement('div');
+            welcomeElement.className = 'chat-message incoming';
+            
+            // Add robot emoji
+            const robotEmoji = document.createElement('div');
+            robotEmoji.className = 'robot-emoji';
+            robotEmoji.textContent = '🤖';
+            welcomeElement.appendChild(robotEmoji);
+            
+            // Welcome text
+            welcomeElement.innerHTML += "Hello! I'm SūdžiusAI powered by Gemini. How can I help you today?";
+            
+            chatBox.appendChild(welcomeElement);
+        }
     
         async function sendMessage() {
             const message = input.value.trim();
@@ -198,10 +439,21 @@
                 // Show a temporary "thinking" message
                 const thinkingElement = document.createElement('div');
                 thinkingElement.className = 'chat-message incoming';
-                thinkingElement.textContent = "AI is thinking...";
-                chatBox.appendChild(thinkingElement);
                 
-                const response = await fetch(API_URL, {
+                // Add robot emoji to thinking message
+                const thinkingRobotEmoji = document.createElement('div');
+                thinkingRobotEmoji.className = 'robot-emoji';
+                thinkingRobotEmoji.textContent = '🤖';
+                thinkingElement.appendChild(thinkingRobotEmoji);
+                
+                thinkingElement.innerHTML += "Thinking...";
+                chatBox.appendChild(thinkingElement);
+                chatBox.scrollTop = chatBox.scrollHeight;
+                
+                // Disable the send button while processing
+                sendButton.disabled = true;
+                
+                const response = await fetch(API_ENDPOINTS.generate, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -231,28 +483,47 @@
                 responseElement.className = 'chat-message incoming';
                 
                 // Add robot emoji before text
-                const robotEmoji = document.createElement('span');
+                const robotEmoji = document.createElement('div');
                 robotEmoji.className = 'robot-emoji';
                 robotEmoji.textContent = '🤖';
                 responseElement.appendChild(robotEmoji);
                 
-                // Set the AI response text
+                // Parse markdown and add to response
                 responseElement.innerHTML += marked.parse(aiResponse);
     
                 chatBox.appendChild(responseElement);
+    
+                // If KaTeX is available for math rendering
+                if (typeof renderMathInElement !== 'undefined') {
+                    renderMathInElement(responseElement, {
+                        delimiters: [
+                            { left: "$$", right: "$$", display: true },
+                            { left: "$", right: "$", display: false }
+                        ]
+                    });
+                }
     
             } catch (error) {
                 console.error('Error:', error);
     
                 const errorElement = document.createElement('div');
                 errorElement.className = 'chat-message incoming';
-                errorElement.textContent = "⚠️ Failed to get a response from AI: " + error.message;
+                
+                // Add robot emoji to error message
+                const errorRobotEmoji = document.createElement('div');
+                errorRobotEmoji.className = 'robot-emoji';
+                errorRobotEmoji.textContent = '🤖';
+                errorElement.appendChild(errorRobotEmoji);
+                
+                errorElement.innerHTML += "⚠️ Failed to get a response: " + (error.message || "Unknown error");
                 chatBox.appendChild(errorElement);
+            } finally {
+                // Enable the send button again
+                sendButton.disabled = false;
+                chatBox.scrollTop = chatBox.scrollHeight;
             }
-    
-            chatBox.scrollTop = chatBox.scrollHeight;
         }
-    
+
         sendButton.addEventListener('click', sendMessage);
         input.addEventListener('keypress', function (event) {
             if (event.key === 'Enter') {
@@ -260,25 +531,66 @@
                 event.preventDefault();
             }
         });
+    
+        // Dark mode toggle functionality
+        const toggleSwitch = document.getElementById('toggle');
+        toggleSwitch.addEventListener('change', () => {
+            document.body.classList.toggle('dark-mode', toggleSwitch.checked);
+        });
         
-        // Display a welcome message when the chat loads
-        window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                const welcomeElement = document.createElement('div');
-                welcomeElement.className = 'chat-message incoming';
+        // Check API status on load
+        async function checkApiStatus() {
+            try {
+                const response = await fetch(API_ENDPOINTS.health);
+                const data = await response.json();
+                
+                // Show API status indicator
+                apiStatus.style.display = 'block';
+                
+                if (data.status === "ok") {
+                    console.log("API is online and functioning");
+                    apiStatus.textContent = "API Online";
+                    apiStatus.className = "api-status online";
+                } else {
+                    console.warn("API returned unexpected status:", data);
+                    apiStatus.textContent = "API Status: Unknown";
+                    apiStatus.className = "api-status offline";
+                    
+                    // Show warning message
+                    const apiWarningElement = document.createElement('div');
+                    apiWarningElement.className = 'chat-message incoming';
+                    
+                    // Add robot emoji
+                    const robotEmoji = document.createElement('div');
+                    robotEmoji.className = 'robot-emoji';
+                    robotEmoji.textContent = '🤖';
+                    apiWarningElement.appendChild(robotEmoji);
+                    
+                    apiWarningElement.innerHTML += "⚠️ API status is unexpected. Some features may not work correctly.";
+                    chatBox.appendChild(apiWarningElement);
+                }
+            } catch (error) {
+                console.error("Failed to connect to API:", error);
+                
+                // Show offline status indicator
+                apiStatus.style.display = 'block';
+                apiStatus.textContent = "API Offline";
+                apiStatus.className = "api-status offline";
+                
+                // Show error message in chat
+                const apiErrorElement = document.createElement('div');
+                apiErrorElement.className = 'chat-message incoming';
                 
                 // Add robot emoji
-                const robotEmoji = document.createElement('span');
+                const robotEmoji = document.createElement('div');
                 robotEmoji.className = 'robot-emoji';
                 robotEmoji.textContent = '🤖';
-                welcomeElement.appendChild(robotEmoji);
+                apiErrorElement.appendChild(robotEmoji);
                 
-                // Welcome text
-                welcomeElement.innerHTML += "Hello! I'm SūdžiusAI powered by Gemini. How can I help you today?";
-                
-                chatBox.appendChild(welcomeElement);
-            }, 1200); // After the loading screen disappears
-        });
-    </script>    
+                apiErrorElement.innerHTML += "⚠️ There seems to be a connection issue with the API. Some features may not work correctly.";
+                chatBox.appendChild(apiErrorElement);
+            }
+        }
+    </script>
 </body>
 </html>

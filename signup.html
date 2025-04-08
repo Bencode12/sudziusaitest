@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - SūdžiusAI</title>
+    <style>
+        /* CSS Variables for theming */
+        :root {
+            --primary-color: #007bff;
+            --hover-color: #0056b3;
+            --background-color: #f0f0f0;
+            --chat-background: white;
+            --incoming-message-color: #e5e5ea;
+            --dropdown-background: #333;
+            --dropdown-item-color: #fff;
+            --dropdown-item-hover: #444;
+            --font-family: Arial, sans-serif;
+            --border-radius: 4px;
+        }
+
+        /* Dark Mode Variables */
+        body.dark-mode {
+            --primary-color: #1a1a1a;
+            --background-color: #333;
+            --chat-background: #444;
+            --incoming-message-color: #555;
+        }
+
+        /* Body and Navbar styles */
+        body {
+            font-family: var(--font-family);
+            background: linear-gradient(to bottom, var(--primary-color), var(--background-color));
+            margin: 0;
+            padding: 0;
+            transition: background 0.3s;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            color: white;
+            position: relative; 
+        }
+
+        .navbar img {
+            height: 40px;
+        }
+
+        .navbar-title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        /* Dropdown styles */
+        .menu-container {
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .menu-button {
+            cursor: pointer; 
+            transition: opacity 0.2s ease; 
+            outline: none; /* Remove outline */
+        }
+
+        .dropdown-content {
+            display: none; 
+            position: absolute; 
+            background-color: var(--dropdown-background); 
+            min-width: 160px; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1; 
+            border-radius: 8px; 
+            overflow: hidden;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 100%;
+            opacity: 0; 
+            visibility: hidden; 
+            transition: opacity 0.2s ease, visibility 0.2s ease; 
+        }
+
+        .dropdown-content ul {
+            list-style-type: none; 
+            padding: 0; 
+            margin: 0; 
+        }
+
+        .dropdown-content a {
+            color: var(--dropdown-item-color);
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .dropdown-content a:hover {
+            background-color: var(--dropdown-item-hover);
+            transform: scale(1.05);
+        }
+
+        /* Show dropdown on hover and fade effects */
+        .menu-container:hover .dropdown-content,
+        .menu-button:focus + .dropdown-content {
+            display: block;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .menu-container:hover .menu-button {
+            opacity: 0; 
+        }
+
+        main {
+            padding: 2em;
+            text-align: center;
+            flex: 1;
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        p {
+            font-size: 1.2em;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1em 0;
+        }
+
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* Center content vertically */
+        }
+
+        form {
+            background-color: var(--chat-background);
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            width: 100%;
+            max-width: 400px;
+            margin: 20px 0;
+        }
+
+        label {
+            margin-top: 10px;
+            display: block;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: var(--border-radius);
+            padding: 10px;
+            font-size: 16px;
+            margin-top: 5px;
+            box-sizing: border-box; /* Ensure padding is included in width */
+        }
+
+        button {
+            margin-top: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: var(--hover-color);
+        }
+
+        input:focus,
+        button:focus {
+            outline: 2px solid var(--primary-color);
+        }
+
+        .register-here {
+            margin-top: 20px;
+            font-size: 1em;
+            text-align: center; /* Center the text for better visual alignment */
+        }
+
+        .register-here a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .register-here a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            color: #dc3545;
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+        
+        .success-message {
+            color: #28a745;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #d4edda;
+            border-radius: var(--border-radius);
+        }
+
+        /* Dark Mode Toggle Styles */
+        .toggle-container {
+            position: relative;
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .toggle-switch {
+            display: none;
+        }
+
+        .switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: var(--primary-color);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #E9F8FD;
+            border-radius: 15px;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch:checked + .switch {
+            background: #F5EC59;
+        }
+
+        .toggle-switch:checked + .switch .fill {
+            transform: translateX(30px);
+        }
+        
+        .pin-info {
+            margin-top: 5px;
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <img src="Kauno-Zaliakalnio-progimnazija_logo-e1679002355734-300x300.jpg" alt="Logo">
+        <h1 class="navbar-title">SūdžiusAI</h1>
+        <div class="menu-container">
+            <div class="menu-button" tabindex="0" aria-haspopup="true" aria-expanded="false" role="button">
+                <span class="menu-text" aria-label="Menu">Meniu</span>
+            </div>
+            <div class="dropdown-content" aria-hidden="true">
+                <ul>
+                    <li><a href="index.html" id="home-link" aria-current="page">Pagrindinis</a></li>
+                    <li><a href="about.html" aria-label="About page">Apie</a></li>
+                    <li><a href="Login.html" aria-label="Log In page">Prisijunk</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <main>
+        <h2>Registruok paskyrą</h2>
+        <div class="form-container">
+            <form id="register-form" aria-labelledby="register-form">
+                <label for="username">Vardas:</label>
+                <input type="text" id="username" name="username" required aria-required="true">
+                <div id="username-error" class="error-message"></div>
+
+                <label for="pin">PIN kodas:</label>
+                <input type="text" id="pin" name="pin" required aria-required="true">
+                <div id="pin-error" class="error-message"></div>
+                <div class="pin-info">Įvesk PIN kurį gavai iš owner'io</div>
+
+                <label for="password">Slaptažodis:</label>
+                <input type="password" id="password" name="password" required aria-required="true">
+                <div id="password-error" class="error-message"></div>
+
+                <label for="confirm-password">Pakartok slaptažodį:</label>
+                <input type="password" id="confirm-password" name="confirm-password" required aria-required="true">
+                <div id="confirm-password-error" class="error-message"></div>
+
+                <button type="submit">Registruoti</button>
+                <div id="form-message"></div>
+            </form>
+            <div class="register-here">
+                <p>Arba <a href="Login.html">prisijunk</a></p>
+            </div>
+        </div>
+
+        <div class="toggle-container" aria-label="Toggle dark mode">
+            <input type="checkbox" id="toggle" class="toggle-switch" aria-hidden="true">
+            <label for="toggle" class="switch">
+                <div class="fill"></div>
+            </label>
+        </div>
+    </main>
+
+    <script>
+        // Configuration - Use hardcoded URL for Replit
+        const API_URL = window.location.protocol + "//" + window.location.host;
+        const API_ENDPOINT = API_URL + "/api/register";
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('register-form');
+            
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Clear previous error messages
+                clearErrors();
+                
+                // Get form values
+                const username = document.getElementById('username').value.trim();
+                
+                const pin = document.getElementById('pin').value.trim();
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirm-password').value;
+                
+                // Validate form inputs
+                let isValid = true;
+                
+                if (!username) {
+                    showError('username', 'Username is required');
+                    isValid = false;
+                }
+                
+                    isValid = false;
+                }
+                
+                if (!pin) {
+                    showError('pin', 'PIN code is required');
+                    isValid = false;
+                }
+                
+                if (!password) {
+                    showError('password', 'Password is required');
+                    isValid = false;
+                } else if (password.length < 8) {
+                    showError('password', 'Password must be at least 8 characters long');
+                    isValid = false;
+                }
+                
+                if (password !== confirmPassword) {
+                    showError('confirm-password', 'Passwords do not match');
+                    isValid = false;
+                }
+                
+                if (isValid) {
+                    try {
+                        // Submit form data to API
+                        const response = await fetch(API_ENDPOINT, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                username,
+                                
+                                pin,
+                                password
+                            })
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (response.ok) {
+                            // Registration successful
+                            form.reset();
+                            showFormMessage('Registration successful! You can now <a href="Login.html">log in</a>.', 'success');
+                        } else {
+                            // Registration failed
+                            if (data.error.includes('Username already exists')) {
+                                showError('username', 'This username is already taken');
+                                showError('pin', 'Invalid PIN code or already used');
+                            } else {
+                                showFormMessage('Registration failed: ' + data.error, 'error');
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        showFormMessage('An error occurred. Please try again later.', 'error');
+                    }
+                }
+            });
+            
+            
+            // Display error message
+            function showError(fieldId, message) {
+                const errorElement = document.getElementById(`${fieldId}-error`);
+                errorElement.textContent = message;
+            }
+            
+            // Clear all error messages
+            function clearErrors() {
+                const errorElements = document.querySelectorAll('.error-message');
+                errorElements.forEach(element => element.textContent = '');
+                document.getElementById('form-message').innerHTML = '';
+            }
+            
+            // Display form message (success or error)
+            function showFormMessage(message, type) {
+                const messageElement = document.getElementById('form-message');
+                messageElement.innerHTML = message;
+                messageElement.className = type === 'success' ? 'success-message' : 'error-message';
+            }
+        });
+
+        // Dark mode toggle functionality
+        const toggleSwitch = document.getElementById('toggle');
+        toggleSwitch.addEventListener('change', () => {
+            document.body.classList.toggle('dark-mode', toggleSwitch.checked);
+        });
+    </script>
+</body>
+</html>

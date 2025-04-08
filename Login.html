@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - SūdžiusAI</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* CSS Variables for theming */
+        :root {
+            --primary-color: #007bff;
+            --hover-color: #0056b3;
+            --background-color: #f0f0f0;
+            --chat-background: white;
+            --dropdown-background: #333;
+            --dropdown-item-color: #fff;
+            --dropdown-item-hover: #444;
+            --font-family: Arial, sans-serif;
+            --border-radius: 4px;
+        }
+
+        /* Dark Mode Variables */
+        body.dark-mode {
+            --primary-color: #1a1a1a;
+            --background-color: #333;
+            --chat-background: #444;
+        }
+
+        /* Body and Navbar styles */
+        body {
+            font-family: var(--font-family);
+            background: linear-gradient(to bottom, var(--primary-color), var(--background-color));
+            margin: 0;
+            padding: 0;
+            transition: background 0.3s;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            color: white;
+            position: relative; 
+        }
+
+        .navbar img {
+            height: 40px;
+        }
+
+        .navbar-title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        /* Dropdown styles */
+        .menu-container {
+            display: flex;
+            align-items: center;
+            position: relative; /* Set relative positioning for dropdown */
+        }
+
+        .menu-button {
+            cursor: pointer; 
+            transition: opacity 0.2s ease; 
+            outline: none; /* Remove outline */
+            background: none;
+            border: none;
+            color: white;
+            font-size: 16px;
+        }
+
+        .dropdown-content {
+            display: none; 
+            position: absolute; 
+            background-color: var(--dropdown-background); 
+            min-width: 160px; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1; 
+            border-radius: 8px; 
+            overflow: hidden;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 100%;
+            opacity: 0; 
+            visibility: hidden; 
+            transition: opacity 0.2s ease, visibility 0.2s ease; 
+        }
+
+        .dropdown-content ul {
+            list-style-type: none; 
+            padding: 0; 
+            margin: 0; 
+        }
+
+        .dropdown-content a {
+            color: var(--dropdown-item-color);
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .dropdown-content a:hover {
+            background-color: var(--dropdown-item-hover);
+            transform: scale(1.05);
+        }
+
+        /* Show dropdown on hover and fade effects */
+        .menu-container:hover .dropdown-content,
+        .menu-button:focus + .dropdown-content {
+            display: block;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .menu-container:hover .menu-button {
+            opacity: 0; 
+        }
+
+        main {
+            padding: 2em;
+            text-align: center;
+            flex: 1;
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        p {
+            font-size: 1.2em;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1em 0;
+        }
+
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* Center content vertically */
+        }
+
+        form {
+            background-color: var(--chat-background);
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            width: 100%;
+            max-width: 400px;
+            margin: 20px 0;
+        }
+
+        label {
+            margin-top: 10px;
+            display: block;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: var(--border-radius);
+            padding: 10px;
+            font-size: 16px;
+            margin-top: 5px;
+            box-sizing: border-box; /* Ensure padding is included in width */
+        }
+
+        button {
+            margin-top: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: var(--hover-color);
+        }
+
+        input:focus,
+        button:focus {
+            outline: 2px solid var(--primary-color);
+        }
+
+        .register-here {
+            margin-top: 20px;
+            font-size: 1em;
+            text-align: center; /* Center the text for better visual alignment */
+        }
+
+        .register-here a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .register-here a:hover {
+            text-decoration: underline;
+        }
+
+        /* Loading Screen Styles */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent background */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999; /* Ensure it covers the entire screen */
+        }
+
+        .loader {
+            width: 100px;
+            height: 100px;
+            border: 16px solid #f3f3f3; /* Light grey */
+            border-top: 16px solid #3498db; /* Blue */
+            border-radius: 50%;
+            animation: spin 2s linear infinite; /* Animation for spinning effect */
+        }
+
+        /* Animation Keyframes */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Dark Mode Toggle Styles */
+        .toggle-container {
+            position: relative;
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .toggle-switch {
+            display: none;
+        }
+
+        .switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: var(--primary-color);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #E9F8FD;
+            border-radius: 15px;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch:checked + .switch {
+            background: #F5EC59;
+        }
+
+        .toggle-switch:checked + .switch .fill {
+            transform: translateX(30px);
+        }
+
+        /* Error message styles */
+        .error-message {
+            color: #d9534f;
+            background-color: #f9f2f2;
+            border: 1px solid #ebccd1;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 15px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen Container -->
+    <div class="loading-screen">
+        <div class="loader"></div>
+        <p>Loading...</p>
+    </div>
+
+    <div class="navbar">
+        <img src="Kauno-Zaliakalnio-progimnazija_logo-e1679002355734-300x300.jpg" alt="Logo">
+        <h1 class="navbar-title">SūdžiusAI</h1>
+        <div class="menu-container">
+            <div class="menu-button" tabindex="0" aria-haspopup="true" aria-expanded="false" role="button">
+                <span class="menu-text" aria-label="Menu">Menu</span>
+            </div>
+            <div class="dropdown-content" aria-hidden="true">
+                <ul>
+                    <li><a href="index.html" id="home-link" aria-current="page">Pagrindinis</a></li>
+                    <li><a href="about.html" aria-label="About page">Apie</a></li>
+                    <li><a href="Login.html" aria-label="Log in">Prisijungti</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <main style="display: none;"> <!-- Initially hidden -->
+        <h2>Log In</h2>
+        <div class="form-container">
+            <div id="error-message" class="error-message"></div>
+            <form id="login-form">
+                <label for="login-username">Vardas:</label>
+                <input type="text" id="login-username" name="username" required aria-required="true">
+                <label for="login-password">Slaptažodis:</label>
+                <input type="password" id="login-password" name="password" required aria-required="true">
+                <button type="submit">Prisijungti</button> <!-- Log In button -->
+            </form>
+            <div class="register-here">
+                <p>Arba <a href="signup.html">Susikurk paskyrą</a></p>
+            </div>
+        </div>
+
+        <div class="toggle-container" aria-label="Toggle dark mode">
+            <input type="checkbox" id="toggle" class="toggle-switch" aria-hidden="true">
+            <label for="toggle" class="switch">
+                <div class="fill"></div>
+            </label>
+        </div>
+    </main>
+
+    <script>
+        // Simulate loading time
+        window.onload = function() {
+            setTimeout(function() {
+                document.querySelector('.loading-screen').style.display = 'none'; // Hide loading screen
+                document.querySelector('main').style.display = 'block'; // Show main content
+            }, 1000); // Loading time set to 1 second
+        };
+
+        // Dark mode toggle functionality
+        const toggleSwitch = document.getElementById('toggle');
+        toggleSwitch.addEventListener('change', () => {
+            document.body.classList.toggle('dark-mode', toggleSwitch.checked);
+        });
+
+        // Login form submission
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+            const errorMessage = document.getElementById('error-message');
+            
+            // Clear previous error messages
+            errorMessage.style.display = 'none';
+            errorMessage.textContent = '';
+            
+            // Show loading screen
+            document.querySelector('.loading-screen').style.display = 'flex';
+            
+            // Send login request to API
+            fetch('/auth/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password
+                }),
+                credentials: 'same-origin'
+            })
+            .then(response => {
+                // Parse JSON response regardless of status code
+                return response.json().then(data => {
+                    // Add status to the response data to check it later
+                    return { ...data, status: response.status };
+                });
+            })
+            .then(data => {
+                // Check if login was successful
+                if (data.status === 200) {
+                    console.log('Login successful!', data);
+                    // Store API key in localStorage for later use
+                    if (data.api_key) {
+                        localStorage.setItem('api_key', data.api_key);
+                    }
+                    // Redirect to chat UI
+                    window.location.href = '/simple_chat.html';
+                } else {
+                    // Handle error from server
+                    throw new Error(data.error || 'Invalid username or password');
+                }
+            })
+            .catch(error => {
+                console.error('Login error:', error);
+                // Hide loading screen
+                document.querySelector('.loading-screen').style.display = 'none';
+                
+                // Display error message
+                errorMessage.textContent = error.message || 'Login failed. Please try again.';
+                errorMessage.style.display = 'block';
+            });
+        });
+    </script>
+</body>
+</html>
